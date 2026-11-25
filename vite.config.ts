@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/2.3.2-/',
+  base: '/4.2.2/',
   build: {
     outDir: 'docs'
   },
