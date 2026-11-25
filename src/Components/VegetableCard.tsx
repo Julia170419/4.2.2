@@ -1,9 +1,9 @@
 import { Card, Text, Group } from '@mantine/core';
 import type { VegetableCard } from '../types/VegetableCard';
-import { CustomContext } from '../utils/Context';
+import { useTypedSelector, useTypedDispatch } from '../hooks/redux';
+import { addToCart } from '../reducers/CardSlice';
 import ActionButton from '../UI/ActionButton/ActionButton'
 import ButtonCart from '../UI/ButtonCart/ButtonCart';
-import { useContext } from 'react';
 
 export default function VegetableCard({ 
   id,
@@ -11,9 +11,10 @@ export default function VegetableCard({
     image,
     price,
  }: VegetableCard) {
-  const context = useContext(CustomContext);
-if (!context) throw new Error('Context not found');
-const { basket, addBasket } = context;
+
+const basket = useTypedSelector(state => state.cardReducer.basket);
+  const dispatch = useTypedDispatch();
+
 const cartItem = basket.find((item) => item.id === id);
 let count = cartItem?.count ?? 0;
 
@@ -57,7 +58,7 @@ let count = cartItem?.count ?? 0;
       <Group justify="space-between" mt="md" mb="xs">
         <Text fw={500}>$ {count ? price * count : price}</Text>
         <ButtonCart 
-        onClick={() => addBasket({id, name, image, price, count})}
+        onClick={() => dispatch(addToCart({id, name, image, price, count}))}
               text='Add to cart'
               color='#DBF2E0'
               textColor='#3B944E'

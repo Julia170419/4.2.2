@@ -15,10 +15,12 @@
     "@mantine/core": "^9.6.3",
     "@mantine/hooks": "^9.6.3",
     "@phosphor-icons/react": "^2.1.10",
+    "@reduxjs/toolkit": "^2.15.0",
+    "@types/react-redux": "^7.1.35",
     "classnames": "^2.5.1",
-    "ky": "^2.1.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-redux": "^9.3.1",
     "sass": "^1.105.1"
   },
   "devDependencies": {

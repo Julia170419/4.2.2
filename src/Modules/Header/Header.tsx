@@ -1,17 +1,12 @@
 import { Container } from '@mantine/core';
-import { useContext } from 'react';
-import { CustomContext } from '../../utils/Context';
+import { useTypedSelector, useTypedDispatch } from '../../hooks/redux';
+import { togglePopup } from '../../reducers/CardSlice';
 import ButtonCart from '../../UI/ButtonCart/ButtonCart';
 import classes from './Header.module.css';
 
-type HeaderProps = {
-  onCartClick: () => void
-}
-
-export default function Header({ onCartClick }: HeaderProps) {
-  const context = useContext(CustomContext);
-if (!context) throw new Error('Context not found');
-const { basket } = context;
+export default function Header() {
+  const basket = useTypedSelector(state => state.cardReducer.basket);
+    const dispatch = useTypedDispatch();
   return (
     <header className={classes.header}>
       <Container size="md" className={classes.inner}>
@@ -25,7 +20,7 @@ const { basket } = context;
         </a>
 
         <ButtonCart 
-        onClick={onCartClick}
+        onClick={() => dispatch(togglePopup())}
       text='Cart'
       color='#54B46A'
       textColor='white'

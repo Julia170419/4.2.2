@@ -1,10 +1,10 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
-import ky from 'ky';
+import { Provider } from 'react-redux';
+import { setupStore } from '../store/store'
 import { MantineProvider } from '@mantine/core';
 import App from '../App';
-import { Context } from '../utils/Context';
 
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
@@ -22,25 +22,20 @@ beforeAll(() => {
   });
 });
 
-vi.mock('ky', () => ({
-    default: {
-        get: vi.fn(),
-    },
-}));
-
 const mockVegetables = [
     { id: 1, name: 'Broccoli - 1 Kg', image: 'img1', price: 10 },
     { id: 2, name: 'Tomato - 1 Kg', image: 'img2', price: 5 },
     { id: 3, name: 'Carrot - 1 Kg', image: 'img3', price: 7 },
 ];
 
-const renderApp = () => {
+const renderApp = (customStore?: any) => {
+    const store = customStore || setupStore();
     return render(
-        <MantineProvider>
-            <Context>
+        <Provider store={store}>
+            <MantineProvider>
                 <App />
-            </Context>
-        </MantineProvider>
+            </MantineProvider>
+        </Provider>
   );
 };
 
@@ -48,32 +43,41 @@ describe('Vegetables shop', () => {
     beforeEach(() => {
         localStorage.clear();
         vi.clearAllMocks();
+        vi.restoreAllMocks(); 
     })
 
     describe('Main', () => {
         it('Check the quantity of vegetables', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.resolve(mockVegetables)),
-            } as any)
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockVegetables)
+                })
+            ) as any;
             renderApp();
             const vegetables = await screen.findAllByRole('img');
             expect(vegetables).toHaveLength(3);
         })
 
         it('Error quantity of vegetables', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.reject(new Error('Error'))),
-            } as any)
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: false,
+                })
+            ) as any;
             renderApp();
             await waitFor(() => {
-                expect(screen.getByText('Error')).toBeInTheDocument();
+                expect(screen.getByText(/Server Error!/i)).toBeInTheDocument();
             })
         })
 
         it('add to Cart', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.resolve(mockVegetables)),
-            } as any);
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockVegetables)
+                })
+            ) as any;
             renderApp();
             const btns = await screen.findAllByText(/Add to cart/i);
             const user = userEvent.setup();
@@ -85,9 +89,12 @@ describe('Vegetables shop', () => {
         })
 
         it('plus Cart', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.resolve(mockVegetables)),
-            } as any);
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockVegetables)
+                })
+            ) as any;
             renderApp();
             const plusButtons = await screen.findAllByRole('button', { name: 'Primary variant' })
             const user = userEvent.setup();
@@ -99,9 +106,12 @@ describe('Vegetables shop', () => {
         })
 
         it('minus Cart', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.resolve(mockVegetables)),
-            } as any);
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockVegetables)
+                })
+            ) as any;
             renderApp();
             const plusButtons = await screen.findAllByRole('button', { name: 'Primary variant' })
             const minusButtons = await screen.findAllByRole('button', { name: 'Danger variant' })
@@ -125,9 +135,12 @@ describe('Vegetables shop', () => {
         })
         
         it('Change total price', async () => {
-            vi.mocked(ky.get).mockReturnValueOnce({
-                json: vi.fn(() => Promise.resolve(mockVegetables)),
-            } as any);
+            window.fetch = vi.fn(() => 
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockVegetables)
+                })
+            ) as any;
             renderApp();
             const plusButtons = await screen.findAllByRole('button', { name: 'Primary variant' })
             const button = await screen.findByRole('button', { name: /^cart$/i });

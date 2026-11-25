@@ -5,3 +5,7 @@ export type VegetableCard = {
     price: number,
     count: number
 }
+
+export type PopupState = 
+| { type: 'closed'}
+| { type: 'opened'}

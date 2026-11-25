@@ -3,18 +3,12 @@ import classNames from 'classnames';
 import PopupCard from '../../Components/PopupCard/PopupCard';
 import styles from './style.module.css'
 import CartEmpty from './../../assets/cart_empty.svg'
-import { useContext } from 'react';
-import { CustomContext } from '../../utils/Context';
+import { useTypedSelector, useTypedDispatch } from '../../hooks/redux';
+import { togglePopup } from '../../reducers/CardSlice';
 
-type PopupProps = {
-    opened: boolean;
-    onClose: () => void
-}
-
-export default function Popup({ opened, onClose }: PopupProps) {
-  const context = useContext(CustomContext);
-  if (!context) throw new Error('Context not found');
-  const { basket } = context;
+export default function Popup() {
+  const {popup, basket} = useTypedSelector(state => state.cardReducer);
+    const dispatch = useTypedDispatch();
 
   return (
     <>
@@ -23,8 +17,8 @@ export default function Popup({ opened, onClose }: PopupProps) {
       className={classNames(
         basket.length > 0 ? styles.dialog : styles['dialog-empty']
       )}
-        opened={opened}
-        onClose={onClose}
+        opened={popup.type === 'opened'}
+        onClose={() => dispatch(togglePopup())}
         size="lg"
         position={{ top: 62, right: 20 }}
       >
