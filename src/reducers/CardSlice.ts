@@ -44,7 +44,7 @@ export const cardSlice = createSlice({
             const existing = state.basket.find(item => item.id === action.payload.id);
             const addCount = action.payload.count ? action.payload.count : 1
             if (existing) {
-                existing.count += 1
+                return;
             } else {
                 state.basket.push({...action.payload, count: addCount})
             }
